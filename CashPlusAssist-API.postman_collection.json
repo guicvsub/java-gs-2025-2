@@ -1,0 +1,512 @@
+{
+	"info": {
+		"name": "CashPlusAssist API",
+		"description": "Coleção completa de testes para a API CashPlusAssist - Versão Refatorada",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_postman_id": "cashplus-assist-api-v2"
+	},
+	"item": [
+		{
+			"name": "Sessão",
+			"item": [
+				{
+					"name": "Criar Sessão",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/sessao/criar?userId=operador123",
+							"host": ["{{baseUrl}}"],
+							"path": ["sessao", "criar"],
+							"query": [
+								{
+									"key": "userId",
+									"value": "operador123",
+									"description": "ID do usuário (opcional, padrão: 'user')"
+								}
+							]
+						},
+						"description": "Cria uma nova sessão e retorna um token de autenticação"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.token) {",
+									"        pm.collectionVariables.set('sessionToken', jsonData.token);",
+									"        console.log('Token salvo: ' + jsonData.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"response": []
+				},
+				{
+					"name": "Validar Sessão",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Session-Token",
+								"value": "{{sessionToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/sessao/validar",
+							"host": ["{{baseUrl}}"],
+							"path": ["sessao", "validar"]
+						},
+						"description": "Valida se o token de sessão é válido"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Operadores",
+			"item": [
+				{
+					"name": "Criar Operador",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Session-Token",
+								"value": "{{sessionToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"João Silva\",\n    \"cpf\": \"111.444.777-35\",\n    \"turno\": \"MANHA\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/operadores",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "operadores"]
+						},
+						"description": "Cria um novo operador. Valida CPF e turno."
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Operador - CPF Inválido",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Session-Token",
+								"value": "{{sessionToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Maria Santos\",\n    \"cpf\": \"12345678900\",\n    \"turno\": \"TARDE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/operadores",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "operadores"]
+						},
+						"description": "Testa validação de CPF inválido"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Todos Operadores",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Session-Token",
+								"value": "{{sessionToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/operadores",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "operadores"]
+						},
+						"description": "Lista todos os operadores cadastrados"
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Operador por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Session-Token",
+								"value": "{{sessionToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/operadores/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "operadores", "1"]
+						},
+						"description": "Busca um operador específico por ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Operador",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Session-Token",
+								"value": "{{sessionToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"João Silva Santos\",\n    \"cpf\": \"111.444.777-35\",\n    \"turno\": \"TARDE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/operadores/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "operadores", "1"]
+						},
+						"description": "Atualiza um operador existente"
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Operador",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Session-Token",
+								"value": "{{sessionToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/operadores/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "operadores", "1"]
+						},
+						"description": "Deleta um operador por ID"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transações",
+			"item": [
+				{
+					"name": "Criar Transação - DINHEIRO (Risco BAIXO)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Session-Token",
+								"value": "{{sessionToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"valor\": 50.00,\n    \"tipoPagamento\": \"DINHEIRO\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/transacoes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "transacoes"]
+						},
+						"description": "Cria transação em dinheiro (risco sempre BAIXO)"
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Transação - PIX (Risco BAIXO)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Session-Token",
+								"value": "{{sessionToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"valor\": 150.50,\n    \"tipoPagamento\": \"PIX\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/transacoes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "transacoes"]
+						},
+						"description": "Cria transação via PIX (risco sempre BAIXO)"
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Transação - CARTAO (Risco BAIXO)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Session-Token",
+								"value": "{{sessionToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"valor\": 75.00,\n    \"tipoPagamento\": \"CARTAO\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/transacoes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "transacoes"]
+						},
+						"description": "Cria transação em cartão com valor < R$ 100 (risco BAIXO)"
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Transação - CARTAO (Risco MEDIO)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Session-Token",
+								"value": "{{sessionToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"valor\": 300.00,\n    \"tipoPagamento\": \"CARTAO\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/transacoes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "transacoes"]
+						},
+						"description": "Cria transação em cartão com valor entre R$ 100-500 (risco MEDIO)"
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Transação - CARTAO (Risco ALTO)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Session-Token",
+								"value": "{{sessionToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"valor\": 750.00,\n    \"tipoPagamento\": \"CARTAO\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/transacoes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "transacoes"]
+						},
+						"description": "Cria transação em cartão com valor > R$ 500 (risco ALTO)"
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Transação com Operador",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Session-Token",
+								"value": "{{sessionToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"valor\": 200.00,\n    \"tipoPagamento\": \"CARTAO\",\n    \"operadorId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/transacoes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "transacoes"]
+						},
+						"description": "Cria transação associada a um operador"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Todas Transações",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Session-Token",
+								"value": "{{sessionToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/transacoes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "transacoes"]
+						},
+						"description": "Lista todas as transações cadastradas"
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Transação por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Session-Token",
+								"value": "{{sessionToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/transacoes/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "transacoes", "1"]
+						},
+						"description": "Busca uma transação específica por ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Transação",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Session-Token",
+								"value": "{{sessionToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/transacoes/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "transacoes", "1"]
+						},
+						"description": "Deleta uma transação por ID"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "sessionToken",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
